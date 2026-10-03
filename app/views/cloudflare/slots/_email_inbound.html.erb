@@ -1,0 +1,10 @@
+<%# locals: () %>
+<%# In Settings > Email: Cloudflare can receive the requests address for Runwell. %>
+<% connection = Cloudflare::Connection.current %>
+<p class="txt-small margin-none">
+  <% if connection&.email_set_up? %>
+    Cloudflare Email Routing hands <%= connection.email_address %> to Runwell (<%= link_to "Settings › Cloudflare", cloudflare_settings_path(anchor: "requests_by_email"), class: "txt-link" %>).
+  <% else %>
+    The Cloudflare plugin can set this up for you, free, in one step: <%= link_to "Settings › Cloudflare", cloudflare_settings_path(anchor: "requests_by_email"), class: "txt-link" %>.
+  <% end %>
+</p>

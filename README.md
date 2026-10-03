@@ -6,6 +6,16 @@ A plugin for [Runwell](https://github.com/Martin-Business-Consultants/runwellv2)
 agency's project management. It owns its tables (`cloudflare_*`), points at core records by id, and
 extends Runwell only through its plugin hooks, so removing it leaves Runwell as it was.
 
+### Requests by email, through Cloudflare Email Routing
+
+With an API token (Settings > Cloudflare), one button sets up requests by email for free: it uploads
+an Email Worker (`runwell-requests`) holding this install's inbound password, turns Email Routing on
+for the requests address's subdomain (with plus addresses honored, for replies) and routes the
+address to the Worker, which posts each email to Runwell's relay. Runwell switches itself to receive
+through the relay; no environment variables or restart. The token needs Account · Workers Scripts ·
+Edit and, on the zone, Zone · Read, DNS · Edit, Email Routing Rules · Edit and Zone Settings · Edit.
+Needs Runwell 2.5.0 or later.
+
 ## Install
 
 In Runwell, **Settings > Plugins > Add a plugin**: press Install on Cloudflare, or enter

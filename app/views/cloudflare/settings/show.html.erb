@@ -1,0 +1,72 @@
+<% @page_title = "Cloudflare" %>
+<%= render "settings/header", current: :cloudflare %>
+
+<section class="settings">
+  <div class="settings__panel panel shadow txt-align-start">
+    <section class="settings__section flex flex-column gap">
+      <header>
+        <h2 class="divider">Behind Cloudflare’s proxy</h2>
+      </header>
+      <p class="txt-small margin-none">
+        <%= status_tag "Active" %>
+        Requests that came through Cloudflare carry the visitor’s real address, and count as https when Cloudflare received them over https. Nothing to set.
+      </p>
+    </section>
+
+    <section class="settings__section flex flex-column gap">
+      <header>
+        <h2 class="divider">API token</h2>
+      </header>
+      <p class="txt-small txt-subtle margin-none">
+        Only needed for requests by email. In Cloudflare, My Profile › API Tokens › Create token (custom), with:
+        Account · Workers Scripts · Edit; Zone · Zone · Read; Zone · DNS · Edit; Zone · Email Routing Rules · Edit; Zone · Zone Settings · Edit,
+        for the zone your requests address is on. It’s stored encrypted.
+      </p>
+      <%= form_with model: @connection, url: cloudflare_settings_path, method: :patch, scope: :connection, class: "flex flex-column gap txt-small" do |form| %>
+        <label class="flex flex-column gap-half">
+          <span class="font-weight-bold">API token</span>
+          <%= secret_field form, :api_token, placeholder: "Paste the token" %>
+        </label>
+        <button type="submit" class="btn btn--link center">Save</button>
+      <% end %>
+    </section>
+
+    <section class="settings__section flex flex-column gap" id="requests_by_email">
+      <header>
+        <h2 class="divider">Requests by email</h2>
+      </header>
+      <% address = Setting.current.requests_email %>
+      <p class="txt-small margin-none">
+        Cloudflare Email Routing receives mail to your requests address<% if address %> (<strong><%= address %></strong>)<% end %> and hands it to Runwell, which makes each email a request and each reply a note.
+        It’s free, and needs nothing on this server. Use an address on a subdomain, like <code>requests@in.yourdomain.com</code>, so your main domain’s mail is left alone.
+      </p>
+      <% if address.blank? %>
+        <p class="txt-small margin-none"><%= link_to "Set the requests address in Settings › Email", settings_email_path(anchor: "requests_by_email"), class: "txt-link" %> first.</p>
+      <% end %>
+
+      <% if @connection.email_set_up? %>
+        <p class="txt-small margin-none">
+          <%= status_tag "Set up" %>
+          <%= @connection.email_address %> goes to the <code><%= @connection.worker_name %></code> Email Worker on <%= @connection.zone_name %>, set up <%= time_ago_in_words(@connection.email_set_up_at) %> ago.
+          <% if Setting.inbound_ingress == :relay %>
+            Runwell is receiving through it.
+          <% else %>
+            <strong class="txt-negative">Runwell isn’t receiving through the relay right now:</strong> set it up again.
+          <% end %>
+        </p>
+      <% end %>
+      <% if @connection.last_error.present? %>
+        <p class="txt-small txt-negative margin-none">Last attempt<%= " " + time_ago_in_words(@connection.last_error_at) + " ago" if @connection.last_error_at %>: <%= @connection.last_error %></p>
+      <% end %>
+
+      <% if @connection.token? && address.present? %>
+        <%= button_to cloudflare_email_routing_path, class: "btn btn--link center" do %>
+          <span><%= @connection.email_set_up? ? "Set it up again" : "Set it up" %></span>
+        <% end %>
+        <p class="txt-x-small txt-subtle margin-none">
+          It uploads the <code>runwell-requests</code> Email Worker with this install’s password, turns Email Routing on for <%= address.split("@").last %> (with plus addresses, for replies) and routes <%= address %> to it. Running it again puts anything changed back.
+        </p>
+      <% end %>
+    </section>
+  </div>
+</section>
