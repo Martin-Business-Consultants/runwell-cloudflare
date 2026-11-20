@@ -17,7 +17,7 @@ module Cloudflare
 
     def set_up!(address:, relay_url:, password:)
       domain = address.to_s.split("@", 2).last.to_s.downcase
-      raise Refused, "Set the requests address in Settings › Email first." if domain.blank?
+      raise Refused, "Set the requests address in Settings › Requests by email first." if domain.blank?
 
       zone = find_zone(domain)
       raise Refused, "Use an address on a subdomain (like requests@in.#{zone["name"]}): turning Email Routing on for #{zone["name"]} itself would move all of its mail to Cloudflare." if domain == zone["name"]

@@ -7,4 +7,4 @@ json.zone connection.zone_name
 json.worker connection.worker_name
 json.set_up_at connection.email_set_up_at
 json.last_error connection.last_error
-json.receiving Setting.inbound_ingress == :relay
+json.receiving(defined?(::Inbound::Setting) && Runwell::Plugins.enabled?(:inbound) && ::Inbound::Setting.ingress == :relay)
