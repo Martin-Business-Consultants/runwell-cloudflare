@@ -1,5 +1,5 @@
 <%# locals: () %>
-<%# In Settings > Email: Cloudflare can receive the requests address for Runwell. %>
+<%# In Settings > Requests by email (the inbound plugin draws this slot): Cloudflare can receive the requests address for Runwell. %>
 <% connection = Cloudflare::Connection.current %>
 <p class="txt-small margin-none">
   <% if connection&.email_set_up? %>
